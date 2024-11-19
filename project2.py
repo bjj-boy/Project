@@ -1,10 +1,7 @@
 import pygame
 import random
 import sys
-
-# Инициализация Pygame
 pygame.init()
-
 # Настройка размеров окна и шрифта
 WIDTH = 600
 HEIGHT = 600
@@ -18,50 +15,35 @@ CIRCLE_WIDTH = 15
 CROSS_WIDTH = 25
 SPACE = 55
 MOUSE_FONT = pygame.font.SysFont('comicsans', 40)
-
 # Цвета
 RED = (255, 0, 0)
 BG_COLOR = (28, 170, 156)
 LINE_COLOR = (23, 23, 23)
 CIRCLE_COLOR = (239, 231, 200)
 CROSS_COLOR = (66, 66, 66)
-
 # Создание окна
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('TIC TAC TOE')
 screen.fill(BG_COLOR)
-
-# Создание доски
 board = [[None]*BOARD_COLS for _ in range(BOARD_ROWS)]
-
-# Функция для рисования линий
 def draw_lines():
     pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE), (WIDTH, SQUARE_SIZE), LINE_WIDTH)
     pygame.draw.line(screen, LINE_COLOR, (SQUARE_SIZE, 0), (SQUARE_SIZE, HEIGHT), LINE_WIDTH)
     pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE*2), (WIDTH, SQUARE_SIZE*2), LINE_WIDTH)
     pygame.draw.line(screen, LINE_COLOR, (SQUARE_SIZE*2, 0), (SQUARE_SIZE*2, HEIGHT), LINE_WIDTH)
-    #pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE+SQUARE_SIZE), (WIDTH, SQUARE_SIZE+SQUARE_SIZE), LINE_WIDTH)
-
-# Функция для рисования кругов
 def draw_circle(pos, color):
     pygame.draw.circle(screen, color, pos, CIRCLE_RADIUS, CIRCLE_WIDTH)
-
-# Функция для рисования крестов
 def draw_cross(pos, color):
     start = (pos[0]-SPACE, pos[1]-SPACE)
     end = (pos[0]+SPACE, pos[1]+SPACE)
     pygame.draw.line(screen, color, start, end, CROSS_WIDTH)
     pygame.draw.line(screen, color, (pos[0]-SPACE, pos[1]+SPACE), (pos[0]+SPACE, pos[1]-SPACE), CROSS_WIDTH)
-
-# Функция для проверки победы
 def check_win(player):
     win_conditions = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]
     for condition in win_conditions:
         if board[condition[0]%3][condition[0]//3] == board[condition[1]%3][condition[1]//3] == board[condition[2]%3][condition[2]//3] == player:
             return True
     return False
-
-# Функция для рисования доски
 def draw_board():
     screen.fill(BG_COLOR)
     draw_lines()
@@ -71,8 +53,6 @@ def draw_board():
                 draw_cross((col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), CROSS_COLOR)
             elif board[row][col] == 'O':
                 draw_circle((col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), CIRCLE_COLOR)
-
-# Основная игра
 def main():
     global board;
     clock = pygame.time.Clock()
@@ -80,24 +60,19 @@ def main():
     ai_turn = False
     draw_board()
     pygame.display.update()
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
             if event.type == pygame.MOUSEBUTTONDOWN and not check_win('X') and not check_win('O'):
                 mouseX, mouseY = event.pos
                 clicked_row = min(int(mouseY / SQUARE_SIZE),2)
                 clicked_col = min(int(mouseX / SQUARE_SIZE),2)
-
                 if board[clicked_row][clicked_col] is None:
                     board[clicked_row][clicked_col] = 'X'
                     player_turn = False
                     ai_turn = True
-
-                    # Анимация при размещении символа X
                     draw_board()
                     pygame.display.update()
                     pygame.time.wait(100)
@@ -113,16 +88,12 @@ def main():
                 if event.key == pygame.K_q:
                     pygame.quit()
                     sys.exit()
-
-
-        # Анимация при ходе компьютера
         if ai_turn and not check_win('X'):
             available_moves = []
             for row in range(BOARD_ROWS):
                 for col in range(BOARD_COLS):
                     if board[row][col] is None:
                         available_moves.append((row, col))
-
             if len(available_moves) > 0:
                 move = random.choice(available_moves)
                 board[move[0]][move[1]] = 'O'
@@ -131,7 +102,6 @@ def main():
                 pygame.time.wait(500)
                 ai_turn = False
                 player_turn = True
-        # Проверка победы или ничьи
         if check_win('X'):
             draw_board()
             pygame.display.update()
@@ -140,7 +110,6 @@ def main():
             pygame.display.update()
             pygame.time.wait(2000)
             exit();
-
         elif check_win('O'):
             draw_board()
             pygame.display.update()
@@ -149,7 +118,6 @@ def main():
             pygame.display.update()
             pygame.time.wait(2000)
             exit();
-
         elif all([cell != None for row in board for cell in row]):
             draw_board()
             pygame.display.update()
@@ -158,6 +126,5 @@ def main():
             pygame.display.update()
             pygame.time.wait(2000)
             exit();
-
 if __name__ == "__main__":
     main()
